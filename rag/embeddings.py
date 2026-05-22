@@ -54,6 +54,7 @@ from langchain_google_genai import (
 # =========================================
 # LOAD ENV VARIABLES
 # =========================================
+import streamlit as st
 
 load_dotenv()
 
@@ -62,13 +63,8 @@ load_dotenv()
 # =========================================
 
 def embedding_model():
-
-    api_key = os.getenv(
-
-        "API_KEY"
-
-    )
-
+    # api_key = os.getenv("API_KEY")
+    api_key = st.secrets["API_KEY"]
     embeddings = GoogleGenerativeAIEmbeddings(
 
         model="models/gemini-embedding-001",
