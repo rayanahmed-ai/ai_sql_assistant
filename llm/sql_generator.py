@@ -345,7 +345,7 @@
 #     return sql_query
 from dotenv import load_dotenv
 import os
-
+import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # =========================================
@@ -364,8 +364,7 @@ model = ChatGoogleGenerativeAI(
 
     temperature=0,
 
-    api_key=os.getenv("API_KEY")
-
+    google_api_key=st.secrets["API_KEY"]
 )
 
 # =========================================
