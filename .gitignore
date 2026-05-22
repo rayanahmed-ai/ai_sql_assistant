@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+
+# Environment variables
+.env
+
+# Streamlit secrets
+.streamlit/
+
+# CSV exports
+*.csv
+
+# Vector DB
+faiss_schema_db/
+
+# Cache
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
