@@ -791,26 +791,184 @@ def preprocess_node(state):
 # CLARIFICATION NODE
 # =========================================
 
+# def clarification_node(state):
+
+#     result = detect_ambiguity(
+
+#         state["cleaned_query"]
+
+#     )
+
+#     return {
+
+#         "needs_clarification":
+
+#         result["needs_clarification"],
+
+#         "clarification_question":
+
+#         result["clarification_question"]
+
+#     }
+# =========================================
+# CLARIFICATION NODE
+# =========================================
+
 def clarification_node(state):
 
-    result = detect_ambiguity(
+    query = state["cleaned_query"].lower()
 
-        state["cleaned_query"]
+    # =====================================
+    # DEFAULT VALUES
+    # =====================================
 
-    )
+    needs_clarification = False
+
+    clarification_question = ""
+
+    # =====================================
+    # SALES WITHOUT DATE RANGE
+    # =====================================
+
+    if "sales" in query:
+
+        if (
+
+            "2025" not in query
+
+            and "2024" not in query
+
+            and "2023" not in query
+
+            and "month" not in query
+
+            and "year" not in query
+
+            and "last year" not in query
+
+            and "this month" not in query
+
+        ):
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Do you want sales for all periods "
+
+                "or a specific date range?"
+
+            )
+
+    # =====================================
+    # REGION CLARIFICATION
+    # =====================================
+
+    elif "region" in query:
+
+        if (
+
+            "north" not in query
+
+            and "south" not in query
+
+            and "east" not in query
+
+            and "west" not in query
+
+        ):
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Do you want the report for all "
+
+                "regions or a particular region?"
+
+            )
+
+    # =====================================
+    # ORDER FILTERS
+    # =====================================
+
+    elif "orders" in query:
+
+        if "cancelled" not in query:
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Should cancelled orders be included?"
+
+            )
+
+    # =====================================
+    # PRODUCT SUMMARY VS DETAIL
+    # =====================================
+
+    elif "product" in query:
+
+        if (
+
+            "summary" not in query
+
+            and "detail" not in query
+
+            and "transaction" not in query
+
+        ):
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Do you want product-wise summary "
+
+                "or detailed transaction-level data?"
+
+            )
+
+    # =====================================
+    # CUSTOMER ANALYTICS
+    # =====================================
+
+    elif "customer" in query:
+
+        if (
+
+            "sales" not in query
+
+            and "purchase" not in query
+
+        ):
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Do you want customer details "
+
+                "or customer purchase analysis?"
+
+            )
+
+    # =====================================
+    # RETURN STATE
+    # =====================================
 
     return {
 
         "needs_clarification":
 
-        result["needs_clarification"],
+        needs_clarification,
 
         "clarification_question":
 
-        result["clarification_question"]
+        clarification_question
 
     }
-
 # =========================================
 # SCHEMA LOADER NODE
 # =========================================
