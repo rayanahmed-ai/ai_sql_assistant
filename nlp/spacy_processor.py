@@ -27,7 +27,7 @@ import spacy
 #     "en_core_web_sm"
 
 # )
-nlp = spacy.blank("en")
+# nlp = spacy.blank("en")
 
 # =========================================
 # QUERY PREPROCESSOR
@@ -35,21 +35,21 @@ nlp = spacy.blank("en")
 
 def query_processor(query):
 
-    doc = nlp(query)
+    # doc = nlp(query)
 
-    processed_query = " ".join(
+    # processed_query = " ".join(
 
-        [
+    #     [
 
-            token.lemma_.lower()
+    #         token.lemma_.lower()
 
-            for token in doc
+    #         for token in doc
 
-            if not token.is_punct
-            and not token.is_space
+    #         if not token.is_punct
+    #         and not token.is_space
 
-        ]
+    #     ]
 
-    )
+    # )
 
-    return processed_query
+    return query.lower()
