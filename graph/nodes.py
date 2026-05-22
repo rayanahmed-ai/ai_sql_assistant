@@ -761,7 +761,7 @@ from rag.retriever import retrieve_context
 
 from llm.sql_generator import generate_sql
 
-from llm.clarification_llm import detect_ambiguity
+# from llm.clarification_llm import detect_ambiguity
 
 from validation.sql_validator import validate_sql
 
