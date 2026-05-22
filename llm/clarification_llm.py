@@ -13,14 +13,22 @@ import streamlit as st
 #     google_api_key=st.secrets["API_KEY"]
 
 # )
-llm = ChatGoogleGenerativeAI(
+# llm = ChatGoogleGenerativeAI(
 
-    model="models/gemini-1.5-flash-latest",
+#     model="models/gemini-1.5-flash-latest",
 
-    google_api_key=st.secrets["API_KEY"],
+#     google_api_key=st.secrets["API_KEY"],
 
-    temperature=0
+#     temperature=0
 
+# )
+model = ChatGoogleGenerativeAI(
+
+    model="gemini-2.5-flash-lite",
+
+    temperature=0,
+
+    google_api_key=st.secrets["API_KEY"]
 )
 
 # =========================================
