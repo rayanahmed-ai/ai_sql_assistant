@@ -8,7 +8,7 @@ import streamlit as st
 
 llm = ChatGoogleGenerativeAI(
 
-    model="gemini-1.5-flash",
+    model="gemini-1.5-flash-latest",
 
     google_api_key=st.secrets["API_KEY"]
 
