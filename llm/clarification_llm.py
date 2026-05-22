@@ -21,14 +21,19 @@ import streamlit as st
 
 #     temperature=0
 
+# # )
+# llm = ChatGoogleGenerativeAI(
+
+#     model="gemini-2.5-flash-lite",
+
+#     temperature=0,
+
+#     google_api_key=st.secrets["API_KEY"]
 # )
-llm = ChatGoogleGenerativeAI(
-
-    model="gemini-2.5-flash-lite",
-
+model = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
     temperature=0,
-
-    google_api_key=st.secrets["API_KEY"]
+    api_key=os.getenv("API_KEY")
 )
 
 # =========================================
