@@ -22,7 +22,7 @@ import streamlit as st
 #     temperature=0
 
 # )
-model = ChatGoogleGenerativeAI(
+llm = ChatGoogleGenerativeAI(
 
     model="gemini-2.5-flash-lite",
 
