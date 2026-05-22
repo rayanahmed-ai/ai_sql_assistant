@@ -22,11 +22,12 @@ import spacy
 # LOAD SPACY MODEL ONCE
 # =========================================
 
-nlp = spacy.load(
+# nlp = spacy.load(
 
-    "en_core_web_sm"
+#     "en_core_web_sm"
 
-)
+# )
+nlp = spacy.blank("en")
 
 # =========================================
 # QUERY PREPROCESSOR
