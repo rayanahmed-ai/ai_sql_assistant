@@ -22,19 +22,19 @@ import streamlit as st
 #     temperature=0
 
 # # )
-# llm = ChatGoogleGenerativeAI(
+llm = ChatGoogleGenerativeAI(
 
-#     model="gemini-2.5-flash-lite",
-
-#     temperature=0,
-
-#     google_api_key=st.secrets["API_KEY"]
-# )
-model = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
+
     temperature=0,
-    api_key=os.getenv("API_KEY")
+
+    google_api_key=st.secrets["API_KEY"]
 )
+# model = ChatGoogleGenerativeAI(
+#     model="gemini-1.5-flash",
+#     temperature=0,
+#     api_key=os.getenv("API_KEY")
+# )
 
 # =========================================
 # DETECT AMBIGUITY
