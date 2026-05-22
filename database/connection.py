@@ -72,8 +72,11 @@ def get_db():
     database = "SalesDB"
 
     username = "CloudSA5818b0af"
+    import streamlit as st
 
-    password = os.getenv("azurepw")
+    password = st.secrets["azurepw"]
+
+    # password = os.getenv("azurepw")
 
     connection_string = (
 
