@@ -1,94 +1,253 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_google_genai import ChatGoogleGenerativeAI
 
-import streamlit as st
+# import streamlit as st
 
-# =========================================
-# GEMINI MODEL
-# =========================================
+# # =========================================
+# # GEMINI MODEL
+# # =========================================
 
-# llm = ChatGoogleGenerativeAI(
+# # llm = ChatGoogleGenerativeAI(
 
-#     model="gemini-pro",
+# #     model="gemini-pro",
 
-#     google_api_key=st.secrets["API_KEY"]
-
-# )
-# llm = ChatGoogleGenerativeAI(
-
-#     model="models/gemini-1.5-flash-latest",
-
-#     google_api_key=st.secrets["API_KEY"],
-
-#     temperature=0
+# #     google_api_key=st.secrets["API_KEY"]
 
 # # )
-llm = ChatGoogleGenerativeAI(
+# # llm = ChatGoogleGenerativeAI(
 
-    model="models/gemini-2.0-flash",
+# #     model="models/gemini-1.5-flash-latest",
 
-    temperature=0,
+# #     google_api_key=st.secrets["API_KEY"],
 
-    google_api_key=st.secrets["API_KEY"]
-)
-# model = ChatGoogleGenerativeAI(
-#     model="gemini-1.5-flash",
+# #     temperature=0
+
+# # # )
+# llm = ChatGoogleGenerativeAI(
+
+#     model="models/gemini-2.0-flash",
+
 #     temperature=0,
-#     api_key=os.getenv("API_KEY")
+
+#     google_api_key=st.secrets["API_KEY"]
 # )
+# # model = ChatGoogleGenerativeAI(
+# #     model="gemini-1.5-flash",
+# #     temperature=0,
+# #     api_key=os.getenv("API_KEY")
+# # )
 
+# # =========================================
+# # DETECT AMBIGUITY
+# # =========================================
+
+# def detect_ambiguity(query):
+
+#     prompt = f"""
+
+#     You are an AI Business Intelligence Assistant.
+
+#     Analyze the user query.
+
+#     Determine whether the query is ambiguous
+#     or missing important business information.
+
+#     Examples:
+#     - missing date range
+#     - missing region
+#     - missing granularity
+#     - missing filters
+
+#     User Query:
+#     {query}
+
+#     Return ONLY in this format:
+
+#     NEEDS_CLARIFICATION: YES or NO
+
+#     QUESTION: clarification question or NONE
+#     """
+
+#     response = llm.invoke(prompt)
+
+#     text = response.content
+
+#     needs = "YES" in text
+
+#     question = "NONE"
+
+#     if "QUESTION:" in text:
+
+#         question = (
+
+#             text.split("QUESTION:")[-1]
+
+#             .strip()
+
+#         )
+
+#     return {
+
+#         "needs_clarification": needs,
+
+#         "clarification_question": question
+
+#     }
 # =========================================
-# DETECT AMBIGUITY
+# CLARIFICATION NODE
 # =========================================
 
-def detect_ambiguity(query):
+def clarification_node(state):
 
-    prompt = f"""
+    query = state["cleaned_query"].lower()
 
-    You are an AI Business Intelligence Assistant.
+    # =====================================
+    # DEFAULT VALUES
+    # =====================================
 
-    Analyze the user query.
+    needs_clarification = False
 
-    Determine whether the query is ambiguous
-    or missing important business information.
+    clarification_question = ""
 
-    Examples:
-    - missing date range
-    - missing region
-    - missing granularity
-    - missing filters
+    # =====================================
+    # SALES WITHOUT DATE RANGE
+    # =====================================
 
-    User Query:
-    {query}
+    if "sales" in query:
 
-    Return ONLY in this format:
+        if (
 
-    NEEDS_CLARIFICATION: YES or NO
+            "2025" not in query
 
-    QUESTION: clarification question or NONE
-    """
+            and "2024" not in query
 
-    response = llm.invoke(prompt)
+            and "2023" not in query
 
-    text = response.content
+            and "month" not in query
 
-    needs = "YES" in text
+            and "year" not in query
 
-    question = "NONE"
+            and "last year" not in query
 
-    if "QUESTION:" in text:
+            and "this month" not in query
 
-        question = (
+        ):
 
-            text.split("QUESTION:")[-1]
+            needs_clarification = True
 
-            .strip()
+            clarification_question = (
 
-        )
+                "Do you want sales for all periods "
+
+                "or a specific date range?"
+
+            )
+
+    # =====================================
+    # REGION CLARIFICATION
+    # =====================================
+
+    elif "region" in query:
+
+        if (
+
+            "north" not in query
+
+            and "south" not in query
+
+            and "east" not in query
+
+            and "west" not in query
+
+        ):
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Do you want the report for all "
+
+                "regions or a particular region?"
+
+            )
+
+    # =====================================
+    # ORDER FILTERS
+    # =====================================
+
+    elif "orders" in query:
+
+        if "cancelled" not in query:
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Should cancelled orders be included?"
+
+            )
+
+    # =====================================
+    # PRODUCT SUMMARY VS DETAIL
+    # =====================================
+
+    elif "product" in query:
+
+        if (
+
+            "summary" not in query
+
+            and "detail" not in query
+
+            and "transaction" not in query
+
+        ):
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Do you want product-wise summary "
+
+                "or detailed transaction-level data?"
+
+            )
+
+    # =====================================
+    # CUSTOMER ANALYTICS
+    # =====================================
+
+    elif "customer" in query:
+
+        if (
+
+            "sales" not in query
+
+            and "purchase" not in query
+
+        ):
+
+            needs_clarification = True
+
+            clarification_question = (
+
+                "Do you want customer details "
+
+                "or customer purchase analysis?"
+
+            )
+
+    # =====================================
+    # RETURN STATE
+    # =====================================
 
     return {
 
-        "needs_clarification": needs,
+        "needs_clarification":
 
-        "clarification_question": question
+        needs_clarification,
+
+        "clarification_question":
+
+        clarification_question
 
     }
