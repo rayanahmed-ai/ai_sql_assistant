@@ -1,3 +1,195 @@
+# # # =========================================
+# # # IMPORT FUNCTIONS
+# # # =========================================
+
+# # from nlp.spacy_processor import query_processor
+
+# # from database.schema_loader import schema_loader
+
+# # from rag.retriever import retrieve_context
+
+# # from llm.sql_generator import generate_sql
+
+# # from validation.sql_validator import validate_sql
+
+# # from database.query_executor import execute_query
+
+# # from exports.exporter import export_to_csv
+
+# # # =========================================
+# # # PREPROCESS NODE
+# # # =========================================
+
+# # def preprocess_node(state):
+
+# #     cleaned_query = query_processor(
+
+# #         state["question"]
+
+# #     )
+
+# #     return {
+
+# #         "cleaned_query": cleaned_query
+
+# #     }
+
+# # # =========================================
+# # # SCHEMA LOADER NODE
+# # # =========================================
+
+# # def schema_node(state):
+
+# #     schema = schema_loader()
+
+# #     return {
+
+# #         "schema": schema
+
+# #     }
+
+# # # =========================================
+# # # RAG RETRIEVER NODE
+# # # =========================================
+
+# # def rag_node(state):
+
+# #     rag_context = retrieve_context(
+
+# #         state["cleaned_query"]
+
+# #     )
+
+# #     return {
+
+# #         "rag_context": rag_context
+
+# #     }
+
+# # # =========================================
+# # # SQL GENERATION NODE
+# # # =========================================
+
+# # def sql_node(state):
+
+# #     generated_sql = generate_sql(
+
+# #         question=state["cleaned_query"],
+
+# #         schema=state["schema"],
+
+# #         rag_context=state["rag_context"]
+
+# #     )
+
+# #     return {
+
+# #         "generated_sql": generated_sql
+
+# #     }
+
+# # # =========================================
+# # # VALIDATION NODE
+# # # =========================================
+
+# # def validation_node(state):
+
+# #     validation_result = validate_sql(
+
+# #         state["generated_sql"]
+
+# #     )
+
+# #     return {
+
+# #         "is_valid": validation_result["valid"],
+
+# #         "validation_reason":
+
+# #         validation_result["reason"]
+
+# #     }
+
+# # # =========================================
+# # # QUERY EXECUTION NODE
+# # # =========================================
+
+# # def execution_node(state):
+
+# #     result = execute_query(
+
+# #         state["generated_sql"]
+
+# #     )
+
+# #     return {
+
+# #         "query_result": result
+
+# #     }
+
+# # # =========================================
+# # # EXPORT NODE
+# # # =========================================
+
+# # # def export_node(state):
+
+# # #     export_path = export_to_csv(
+
+# # #         state["query_result"]
+
+# # #     )
+
+# # #     return {
+
+# # #         "export_path": export_path
+
+# # #     }
+# # def export_node(state):
+
+# #     result = state["query_result"]
+
+# #     # =====================================
+# #     # SKIP EXPORT IF ERROR
+# #     # =====================================
+
+# #     if isinstance(result, str):
+
+# #         return {
+
+# #             "export_path":
+
+# #             "Export skipped due to execution error."
+
+# #         }
+
+# #     export_path = export_to_csv(
+
+# #         result
+
+# #     )
+
+# #     return {
+
+# #         "export_path": export_path
+
+# #     }
+
+# # # =========================================
+# # # BLOCKED NODE
+# # # =========================================
+
+# # def blocked_node(state):
+
+# #     return {
+
+# #         "query_result":
+
+# #         f"Blocked Query: "
+
+# #         f"{state['validation_reason']}"
+
+# #     }
 # # =========================================
 # # IMPORT FUNCTIONS
 # # =========================================
@@ -31,6 +223,108 @@
 #     return {
 
 #         "cleaned_query": cleaned_query
+
+#     }
+
+# # =========================================
+# # CLARIFICATION NODE
+# # =========================================
+
+# def clarification_node(state):
+
+#     query = state["cleaned_query"]
+
+#     clarification_question = ""
+
+#     needs_clarification = False
+
+#     # =====================================
+#     # SALES WITHOUT DATE
+#     # =====================================
+
+#     if "sales" in query:
+
+#         if (
+
+#             "2025" not in query
+
+#             and "2024" not in query
+
+#             and "month" not in query
+
+#             and "year" not in query
+
+#         ):
+
+#             clarification_question = (
+
+#                 "Do you want sales for a "
+
+#                 "specific year or all years?"
+
+#             )
+
+#             needs_clarification = True
+
+#     # =====================================
+#     # REGION CHECK
+#     # =====================================
+
+#     elif "region" in query:
+
+#         if (
+
+#             "north" not in query
+
+#             and "south" not in query
+
+#             and "east" not in query
+
+#             and "west" not in query
+
+#         ):
+
+#             clarification_question = (
+
+#                 "Do you want all regions "
+
+#                 "or a specific region?"
+
+#             )
+
+#             needs_clarification = True
+
+#     # =====================================
+#     # CUSTOMER ANALYTICS
+#     # =====================================
+
+#     elif "customer" in query:
+
+#         if "sales" not in query and "purchase" not in query:
+
+#             clarification_question = (
+
+#                 "Do you want customer details "
+
+#                 "or customer sales analysis?"
+
+#             )
+
+#             needs_clarification = True
+
+#     # =====================================
+#     # RETURN STATE
+#     # =====================================
+
+#     return {
+
+#         "needs_clarification":
+
+#         needs_clarification,
+
+#         "clarification_question":
+
+#         clarification_question
 
 #     }
 
@@ -132,19 +426,6 @@
 # # EXPORT NODE
 # # =========================================
 
-# # def export_node(state):
-
-# #     export_path = export_to_csv(
-
-# #         state["query_result"]
-
-# #     )
-
-# #     return {
-
-# #         "export_path": export_path
-
-# #     }
 # def export_node(state):
 
 #     result = state["query_result"]
@@ -190,11 +471,9 @@
 #         f"{state['validation_reason']}"
 
 #     }
-# =========================================
-# IMPORT FUNCTIONS
-# =========================================
+import pandas as pd
 
-from nlp.spacy_processor import query_processor
+from nlp.query_processor import query_processor
 
 from database.schema_loader import schema_loader
 
@@ -202,14 +481,15 @@ from rag.retriever import retrieve_context
 
 from llm.sql_generator import generate_sql
 
-from validation.sql_validator import validate_sql
+from validation.validate_sql import validate_sql
 
 from database.query_executor import execute_query
 
-from exports.exporter import export_to_csv
+from exports.export import export_to_csv
+
 
 # =========================================
-# PREPROCESS NODE
+# NLP PREPROCESS NODE
 # =========================================
 
 def preprocess_node(state):
@@ -222,9 +502,12 @@ def preprocess_node(state):
 
     return {
 
+        **state,
+
         "cleaned_query": cleaned_query
 
     }
+
 
 # =========================================
 # CLARIFICATION NODE
@@ -232,104 +515,77 @@ def preprocess_node(state):
 
 def clarification_node(state):
 
-    query = state["cleaned_query"]
+    question = state["cleaned_query"].lower()
 
-    clarification_question = ""
+    clarification_keywords = [
 
-    needs_clarification = False
+        "sales",
 
-    # =====================================
-    # SALES WITHOUT DATE
-    # =====================================
+        "profit",
 
-    if "sales" in query:
+        "revenue"
 
-        if (
+    ]
 
-            "2025" not in query
+    has_year = any(
 
-            and "2024" not in query
+        year in question
 
-            and "month" not in query
+        for year in [
 
-            and "year" not in query
+            "2023",
 
-        ):
+            "2024",
 
-            clarification_question = (
+            "2025",
 
-                "Do you want sales for a "
+            "2026"
 
-                "specific year or all years?"
+        ]
 
-            )
+    )
 
-            needs_clarification = True
+    needs_clarification = (
 
-    # =====================================
-    # REGION CHECK
-    # =====================================
+        any(
 
-    elif "region" in query:
+            keyword in question
 
-        if (
+            for keyword in clarification_keywords
 
-            "north" not in query
+        )
 
-            and "south" not in query
+        and not has_year
 
-            and "east" not in query
+    )
 
-            and "west" not in query
+    if needs_clarification:
 
-        ):
+        return {
 
-            clarification_question = (
+            **state,
 
-                "Do you want all regions "
+            "needs_clarification": True,
 
-                "or a specific region?"
+            "clarification_message":
 
-            )
+                "Please specify the year."
 
-            needs_clarification = True
-
-    # =====================================
-    # CUSTOMER ANALYTICS
-    # =====================================
-
-    elif "customer" in query:
-
-        if "sales" not in query and "purchase" not in query:
-
-            clarification_question = (
-
-                "Do you want customer details "
-
-                "or customer sales analysis?"
-
-            )
-
-            needs_clarification = True
-
-    # =====================================
-    # RETURN STATE
-    # =====================================
+        }
 
     return {
 
-        "needs_clarification":
+        **state,
 
-        needs_clarification,
+        "needs_clarification": False,
 
-        "clarification_question":
-
-        clarification_question
+        "clarification_message": ""
 
     }
 
+
 # =========================================
-# SCHEMA LOADER NODE
+# SCHEMA NODE
 # =========================================
 
 def schema_node(state):
@@ -338,17 +594,20 @@ def schema_node(state):
 
     return {
 
+        **state,
+
         "schema": schema
 
     }
 
+
 # =========================================
-# RAG RETRIEVER NODE
+# RAG NODE
 # =========================================
 
 def rag_node(state):
 
-    rag_context = retrieve_context(
+    context = retrieve_context(
 
         state["cleaned_query"]
 
@@ -356,9 +615,12 @@ def rag_node(state):
 
     return {
 
-        "rag_context": rag_context
+        **state,
+
+        "rag_context": context
 
     }
+
 
 # =========================================
 # SQL GENERATION NODE
@@ -366,7 +628,7 @@ def rag_node(state):
 
 def sql_node(state):
 
-    generated_sql = generate_sql(
+    sql_query = generate_sql(
 
         question=state["cleaned_query"],
 
@@ -378,9 +640,12 @@ def sql_node(state):
 
     return {
 
-        "generated_sql": generated_sql
+        **state,
+
+        "generated_sql": sql_query
 
     }
+
 
 # =========================================
 # VALIDATION NODE
@@ -388,24 +653,35 @@ def sql_node(state):
 
 def validation_node(state):
 
-    validation_result = validate_sql(
+    is_valid = validate_sql(
 
         state["generated_sql"]
 
     )
 
+    reason = (
+
+        "Safe SELECT query."
+
+        if is_valid
+
+        else "Blocked dangerous query."
+
+    )
+
     return {
 
-        "is_valid": validation_result["valid"],
+        **state,
 
-        "validation_reason":
+        "is_valid": is_valid,
 
-        validation_result["reason"]
+        "validation_reason": reason
 
     }
 
+
 # =========================================
-# QUERY EXECUTION NODE
+# EXECUTION NODE
 # =========================================
 
 def execution_node(state):
@@ -418,9 +694,12 @@ def execution_node(state):
 
     return {
 
+        **state,
+
         "query_result": result
 
     }
+
 
 # =========================================
 # EXPORT NODE
@@ -428,33 +707,20 @@ def execution_node(state):
 
 def export_node(state):
 
-    result = state["query_result"]
-
-    # =====================================
-    # SKIP EXPORT IF ERROR
-    # =====================================
-
-    if isinstance(result, str):
-
-        return {
-
-            "export_path":
-
-            "Export skipped due to execution error."
-
-        }
-
     export_path = export_to_csv(
 
-        result
+        state["query_result"]
 
     )
 
     return {
 
+        **state,
+
         "export_path": export_path
 
     }
+
 
 # =========================================
 # BLOCKED NODE
@@ -464,10 +730,22 @@ def blocked_node(state):
 
     return {
 
+        **state,
+
         "query_result":
 
-        f"Blocked Query: "
+            pd.DataFrame(
 
-        f"{state['validation_reason']}"
+                {
+
+                    "ERROR": [
+
+                        "Query blocked for security reasons."
+
+                    ]
+
+                }
+
+            )
 
     }
