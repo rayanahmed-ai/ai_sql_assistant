@@ -222,47 +222,6 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Install spaCy Model
-
-```bash
-python -m spacy download en_core_web_sm
-```
-
----
-
-# Streamlit Cloud Deployment
-
-Go to:
-
-```text
-Streamlit Dashboard → App → Settings → Secrets
-```
-
-Add:
-
-```toml
-API_KEY = "your_google_api_key"
-
-GROQ_API_KEY = "your_groq_api_key"
-
-azurepw = "your_sql_password"
-```
-
----
-
-# SQL Server Configuration
-
-Update:
-
-## `database/connection.py`
-
-```python
-server = "your_server_name"
-
-database = "your_database_name"
-```
-
----
 
 # Run Application
 
@@ -340,22 +299,8 @@ Because:
 - CSV export
 - Dynamic charts and visualizations
 
----
-
-# Future Improvements
-
-- Authentication and user roles
-- Dashboard generation
-- Scheduled report generation
-- Voice-based querying
-- Multi-database support
-- Query caching
-- Natural language chart generation
-
----
 
 # Author
 
 Rayan Ahmed
 
-AI-Powered Natural Language SQL Reporting System Internship Project
