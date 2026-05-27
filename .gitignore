@@ -14,8 +14,7 @@ venv/
 # CSV exports
 *.csv
 
-# Vector DB
-faiss_schema_db/
+
 
 # Cache
 .cache/

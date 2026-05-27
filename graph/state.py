@@ -1,4 +1,63 @@
-from typing import TypedDict
+# from typing import TypedDict
+
+# # =========================================
+# # SHARED GRAPH STATE
+# # =========================================
+
+# class AgentState(TypedDict):
+
+#     # =====================================
+#     # USER INPUT
+#     # =====================================
+
+#     question: str
+
+#     # =====================================
+#     # NLP OUTPUT
+#     # =====================================
+
+#     cleaned_query: str
+
+#     # =====================================
+#     # DATABASE SCHEMA
+#     # =====================================
+
+#     schema: str
+
+#     # =====================================
+#     # RAG CONTEXT
+#     # =====================================
+
+#     rag_context: str
+
+#     # =====================================
+#     # GENERATED SQL
+#     # =====================================
+
+#     generated_sql: str
+
+#     # =====================================
+#     # VALIDATION
+#     # =====================================
+
+#     is_valid: bool
+
+#     validation_reason: str
+
+#     # =====================================
+#     # QUERY RESULT
+#     # =====================================
+
+#     query_result: str
+
+#     # =====================================
+#     # EXPORT
+#     # =====================================
+
+#     export_path: str
+from typing import TypedDict, Optional
+
+import pandas as pd
 
 # =========================================
 # SHARED GRAPH STATE
@@ -12,11 +71,27 @@ class AgentState(TypedDict):
 
     question: str
 
+    cleaned_query: str
+
     # =====================================
-    # NLP OUTPUT
+    # VALIDATION LAYER
     # =====================================
 
-    cleaned_query: str
+    conversation_history: list
+
+    intent_state: dict
+
+    missing_requirements: list
+
+    needs_clarification: bool
+
+    clarification_question: str
+
+    final_refined_query: str
+
+    validation_context: str
+
+    is_relevant: bool
 
     # =====================================
     # DATABASE SCHEMA
@@ -25,7 +100,7 @@ class AgentState(TypedDict):
     schema: str
 
     # =====================================
-    # RAG CONTEXT
+    # SQL RAG
     # =====================================
 
     rag_context: str
@@ -37,21 +112,24 @@ class AgentState(TypedDict):
     generated_sql: str
 
     # =====================================
-    # VALIDATION
+    # SQL VALIDATION
     # =====================================
 
     is_valid: bool
 
     validation_reason: str
+    is_query_actionable: bool
+
+    confidence_score: float
 
     # =====================================
     # QUERY RESULT
     # =====================================
 
-    query_result: str
+    query_result: Optional[pd.DataFrame]
 
     # =====================================
     # EXPORT
     # =====================================
 
-    export_path: str
+    export_path: Optional[str]
