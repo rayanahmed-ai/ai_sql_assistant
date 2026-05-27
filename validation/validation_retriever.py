@@ -24,7 +24,7 @@ embeddings = GoogleGenerativeAIEmbeddings(
 
     model="models/gemini-embedding-001",
 
-    google_api_key=st.secret["API_KEY"]
+    google_api_key=st.secrets["API_KEY"]
 
 )
 
