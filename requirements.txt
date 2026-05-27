@@ -1,32 +1,33 @@
-# streamlit
-# pandas
-# sqlalchemy
-# pyodbc
-# spacy
-# openpyxl
-# langchain
-# langgraph
-# langchain-community
-# faiss-cpu
-# sentence-transformers
-# python-dotenv
 streamlit
+
 pandas
+
+numpy
+
 sqlalchemy
+
 pyodbc
+
 python-dotenv
-spacy
+
+langgraph
 
 langchain
-langgraph
+
 langchain-community
+
 langchain-google-genai
 
 faiss-cpu
 
 google-generativeai
 
-# torch
-# torchvision
+groq
 
-# sentence-transformers
+spacy
+
+sqlparse
+
+openpyxl
+
+matplotlib
