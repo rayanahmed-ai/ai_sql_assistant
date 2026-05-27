@@ -22,7 +22,7 @@ load_dotenv()
 
 def embedding_model():
     # api_key = st.getenv("API_KEY")
-    api_key = st.secret["API_KEY"]
+    api_key = st.secrets["API_KEY"]
     embeddings = GoogleGenerativeAIEmbeddings(
 
         model="models/gemini-embedding-001",
