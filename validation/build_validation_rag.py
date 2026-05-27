@@ -11,7 +11,7 @@ from validation.schema_metadata import (
     extract_metadata
 
 )
-
+import streamlit as st
 import os
 
 from dotenv import load_dotenv
@@ -30,7 +30,7 @@ embeddings = GoogleGenerativeAIEmbeddings(
 
     model="models/gemini-embedding-001",
 
-    google_api_key=os.getenv("API_KEY2")
+    google_api_key=st.secret["API_KEY2"]
 
 )
 
