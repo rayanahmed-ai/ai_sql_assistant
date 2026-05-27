@@ -16,7 +16,7 @@ load_dotenv()
 
 client = Groq(
 
-    api_key=st.secret["GROQ_API_KEY"]
+    api_key=st.secrets["GROQ_API_KEY"]
 
 )
 
