@@ -19,7 +19,7 @@ repair_model = ChatGoogleGenerativeAI(
 
     temperature=0,
 
-    api_key=st.secret["REPAIR_API_KEY"]
+    api_key=st.secrets["REPAIR_API_KEY"]
 
 )
 
