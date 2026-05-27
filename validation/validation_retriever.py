@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 # =========================================
 
 load_dotenv()
-
+import streamlit as st
 # =========================================
 # LOAD EMBEDDINGS
 # =========================================
@@ -24,7 +24,7 @@ embeddings = GoogleGenerativeAIEmbeddings(
 
     model="models/gemini-embedding-001",
 
-    google_api_key=os.getenv("API_KEY")
+    google_api_key=st.secret["API_KEY"]
 
 )
 
