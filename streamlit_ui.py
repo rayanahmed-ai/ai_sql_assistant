@@ -1,784 +1,3 @@
-# import streamlit as st
-# import pandas as pd
-
-# from graph.workflow import graph
-
-# # =========================================
-# # PAGE CONFIG
-# # =========================================
-
-# st.set_page_config(
-
-#     page_title="AI SQL Assistant",
-
-#     page_icon="🤖",
-
-#     layout="wide"
-
-# )
-
-# # =========================================
-# # CUSTOM CSS
-# # =========================================
-
-# st.markdown(
-#     """
-#     <style>
-
-#     .main {
-#         padding-top: 2rem;
-#     }
-
-#     .stTextInput > div > div > input {
-#         font-size: 18px;
-#     }
-
-#     .title {
-#         font-size: 42px;
-#         font-weight: bold;
-#         color: #4F46E5;
-#     }
-
-#     .subtitle {
-#         font-size: 18px;
-#         color: gray;
-#         margin-bottom: 30px;
-#     }
-
-#     </style>
-#     """,
-#     unsafe_allow_html=True
-# )
-
-# # =========================================
-# # HEADER
-# # =========================================
-
-# st.markdown(
-
-#     '<div class="title">🤖 AI SQL Assistant</div>',
-
-#     unsafe_allow_html=True
-
-# )
-
-# st.markdown(
-
-#     '<div class="subtitle">'
-#     'Ask questions in natural language and '
-#     'generate SQL Server reports instantly.'
-#     '</div>',
-
-#     unsafe_allow_html=True
-
-# )
-
-# # =========================================
-# # SESSION STATE
-# # =========================================
-
-# if "conversation_history" not in st.session_state:
-
-#     st.session_state.conversation_history = []
-
-# if "intent_state" not in st.session_state:
-
-#     st.session_state.intent_state = {}
-
-# if "awaiting_clarification" not in st.session_state:
-
-#     st.session_state.awaiting_clarification = False
-
-# if "latest_question" not in st.session_state:
-
-#     st.session_state.latest_question = ""
-
-# if "current_clarification_question" not in st.session_state:
-
-#     st.session_state.current_clarification_question = ""
-
-# # =========================================
-# # USER INPUT
-# # =========================================
-
-# question = st.text_input(
-
-#     "Enter your question:",
-
-#     placeholder="Example: Show monthly product wise sales for 2025"
-
-# )
-
-# # =========================================
-# # CLARIFICATION SECTION
-# # =========================================
-
-# if st.session_state.awaiting_clarification:
-
-#     st.info(
-
-#         f"{st.session_state.current_clarification_question}"
-
-#     )
-
-#     clarification_answer = st.text_input(
-
-#         "Answer the clarification question"
-
-#     )
-
-#     if clarification_answer.strip() == "":
-
-#         st.stop()
-
-#     # =====================================
-#     # SUBMIT CLARIFICATION
-#     # =====================================
-
-#     if st.button(
-
-#         "Submit Clarification",
-
-#         key="clarification_btn"
-
-#     ):
-
-#         with st.spinner(
-
-#             "Refining your request..."
-
-#         ):
-
-#             try:
-
-#                 # =============================
-#                 # STORE USER ANSWER
-#                 # =============================
-
-#                 st.session_state.conversation_history.append(
-
-#                     {
-
-#                         "user":
-
-#                         clarification_answer
-
-#                     }
-
-#                 )
-
-#                 # =============================
-#                 # BETTER QUERY MERGING
-#                 # =============================
-
-#                 merged_query = f"""
-
-#                 Original User Request:
-#                 {st.session_state.latest_question}
-
-#                 User Clarification:
-#                 {clarification_answer}
-
-#                 Current Intent State:
-#                 {st.session_state.intent_state}
-
-#                 """
-
-#                 # =============================
-#                 # RUN GRAPH AGAIN
-#                 # =============================
-
-#                 response = graph.invoke(
-
-#                     {
-
-#                         "question":
-
-#                         merged_query,
-
-#                         "conversation_history":
-
-#                         st.session_state.conversation_history,
-
-#                         "intent_state":
-
-#                         st.session_state.intent_state
-
-#                     }
-
-#                 )
-
-#                 # =============================
-#                 # STILL NEEDS CLARIFICATION
-#                 # =============================
-
-#                 if response.get(
-
-#                     "needs_clarification",
-
-#                     False
-
-#                 ):
-
-#                     st.session_state.intent_state = (
-
-#                         response.get(
-
-#                             "updated_intent_state",
-
-#                             {}
-
-#                         )
-
-#                     )
-
-#                     st.session_state.current_clarification_question = (
-
-#                         response.get(
-
-#                             "clarification_question",
-
-#                             "Please clarify further."
-
-#                         )
-
-#                     )
-
-#                     st.rerun()
-
-#                 # =============================
-#                 # FINAL QUERY READY
-#                 # =============================
-
-#                 else:
-
-#                     st.session_state.awaiting_clarification = False
-
-#                     st.success(
-
-#                         "Final query understood."
-
-#                     )
-
-#                     # =========================
-#                     # GENERATED SQL
-#                     # =========================
-
-#                     st.subheader(
-
-#                         "🛢 Generated SQL"
-
-#                     )
-
-#                     st.code(
-
-#                         response.get(
-
-#                             "generated_sql",
-
-#                             ""
-
-#                         ),
-
-#                         language="sql"
-
-#                     )
-
-#                     # =========================
-#                     # VALIDATION STATUS
-#                     # =========================
-
-#                     st.subheader(
-
-#                         "✅ Validation"
-
-#                     )
-
-#                     if response.get(
-
-#                         "is_valid",
-
-#                         False
-
-#                     ):
-
-#                         st.success(
-
-#                             response.get(
-
-#                                 "validation_reason",
-
-#                                 "SQL validated."
-
-#                             )
-
-#                         )
-
-#                     else:
-
-#                         st.error(
-
-#                             response.get(
-
-#                                 "validation_reason",
-
-#                                 "Validation failed."
-
-#                             )
-
-#                         )
-
-#                     # =========================
-#                     # QUERY RESULT
-#                     # =========================
-
-#                     result = response.get(
-
-#                         "query_result"
-
-#                     )
-
-#                     if isinstance(
-
-#                         result,
-
-#                         pd.DataFrame
-
-#                     ):
-
-#                         st.subheader(
-
-#                             "📊 Query Results"
-
-#                         )
-
-#                         st.dataframe(
-
-#                             result,
-
-#                             use_container_width=True,
-
-#                             hide_index=True
-
-#                         )
-
-#                         # =====================
-#                         # METRICS
-#                         # =====================
-
-#                         col1, col2 = st.columns(2)
-
-#                         with col1:
-
-#                             st.metric(
-
-#                                 "Rows",
-
-#                                 len(result)
-
-#                             )
-
-#                         with col2:
-
-#                             st.metric(
-
-#                                 "Columns",
-
-#                                 len(result.columns)
-
-#                             )
-
-#                         # =====================
-#                         # DOWNLOAD CSV
-#                         # =====================
-
-#                         csv = result.to_csv(
-
-#                             index=False
-
-#                         ).encode("utf-8")
-
-#                         st.download_button(
-
-#                             label="⬇ Download CSV",
-
-#                             data=csv,
-
-#                             file_name="query_result.csv",
-
-#                             mime="text/csv"
-
-#                         )
-
-#                     else:
-
-#                         st.error(result)
-
-#                     # =========================
-#                     # EXPORT STATUS
-#                     # =========================
-
-#                     st.subheader(
-
-#                         "📁 Export Status"
-
-#                     )
-
-#                     st.success(
-
-#                         response.get(
-
-#                             "export_path",
-
-#                             "Export complete."
-
-#                         )
-
-#                     )
-
-#                     st.rerun()
-
-#             except Exception as e:
-
-#                 st.error(
-
-#                     f"Application Error: {e}"
-
-#                 )
-
-# # =========================================
-# # MAIN GENERATE BUTTON
-# # =========================================
-
-# if not st.session_state.awaiting_clarification:
-
-#     if st.button(
-
-#         "Generate Report",
-
-#         key="generate_btn"
-
-#     ):
-
-#         if question.strip() == "":
-
-#             st.warning(
-
-#                 "Please enter a question."
-
-#             )
-
-#         else:
-
-#             with st.spinner(
-
-#                 "Understanding your request..."
-
-#             ):
-
-#                 try:
-
-#                     # =================================
-#                     # SAVE QUESTION
-#                     # =================================
-
-#                     st.session_state.latest_question = (
-
-#                         question
-
-#                     )
-
-#                     # =================================
-#                     # RUN GRAPH
-#                     # =================================
-
-#                     response = graph.invoke(
-
-#                         {
-
-#                             "question": question,
-
-#                             "conversation_history":
-
-#                             st.session_state.conversation_history,
-
-#                             "intent_state":
-
-#                             st.session_state.intent_state
-
-#                         }
-
-#                     )
-
-#                     # =================================
-#                     # STORE USER HISTORY
-#                     # =================================
-
-#                     st.session_state.conversation_history.append(
-
-#                         {
-
-#                             "user": question
-
-#                         }
-
-#                     )
-
-#                     # =================================
-#                     # IRRELEVANT QUERY
-#                     # =================================
-
-#                     if not response.get(
-
-#                         "is_relevant",
-
-#                         True
-
-#                     ):
-
-#                         st.error(
-
-#                             "I'm sorry, I can only help "
-#                             "with business analytics "
-#                             "and reporting queries."
-
-#                         )
-
-#                     # =================================
-#                     # NEEDS CLARIFICATION
-#                     # =================================
-
-#                     elif response.get(
-
-#                         "needs_clarification",
-
-#                         False
-
-#                     ):
-
-#                         st.session_state.awaiting_clarification = True
-
-#                         st.session_state.intent_state = (
-
-#                             response.get(
-
-#                                 "updated_intent_state",
-
-#                                 {}
-
-#                             )
-
-#                         )
-
-#                         st.session_state.current_clarification_question = (
-
-#                             response.get(
-
-#                                 "clarification_question",
-
-#                                 "Please clarify."
-
-#                             )
-
-#                         )
-
-#                         st.rerun()
-
-#                     # =================================
-#                     # FINAL QUERY READY
-#                     # =================================
-
-#                     else:
-
-#                         st.success(
-
-#                             "Final query understood."
-
-#                         )
-
-#                         # =============================
-#                         # GENERATED SQL
-#                         # =============================
-
-#                         st.subheader(
-
-#                             "🛢 Generated SQL"
-
-#                         )
-
-#                         st.code(
-
-#                             response.get(
-
-#                                 "generated_sql",
-
-#                                 ""
-
-#                             ),
-
-#                             language="sql"
-
-#                         )
-
-#                         # =============================
-#                         # VALIDATION
-#                         # =============================
-
-#                         st.subheader(
-
-#                             "✅ Validation"
-
-#                         )
-
-#                         if response.get(
-
-#                             "is_valid",
-
-#                             False
-
-#                         ):
-
-#                             st.success(
-
-#                                 response.get(
-
-#                                     "validation_reason",
-
-#                                     "SQL validated."
-
-#                                 )
-
-#                             )
-
-#                         else:
-
-#                             st.error(
-
-#                                 response.get(
-
-#                                     "validation_reason",
-
-#                                     "Validation failed."
-
-#                                 )
-
-#                             )
-
-#                         # =============================
-#                         # QUERY RESULT
-#                         # =============================
-
-#                         result = response.get(
-
-#                             "query_result"
-
-#                         )
-
-#                         if isinstance(
-
-#                             result,
-
-#                             pd.DataFrame
-
-#                         ):
-
-#                             st.subheader(
-
-#                                 "📊 Query Results"
-
-#                             )
-
-#                             st.dataframe(
-
-#                                 result,
-
-#                                 use_container_width=True,
-
-#                                 hide_index=True
-
-#                             )
-
-#                             # =========================
-#                             # METRICS
-#                             # =========================
-
-#                             col1, col2 = st.columns(2)
-
-#                             with col1:
-
-#                                 st.metric(
-
-#                                     "Rows",
-
-#                                     len(result)
-
-#                                 )
-
-#                             with col2:
-
-#                                 st.metric(
-
-#                                     "Columns",
-
-#                                     len(result.columns)
-
-#                                 )
-
-#                             # =========================
-#                             # DOWNLOAD BUTTON
-#                             # =========================
-
-#                             csv = result.to_csv(
-
-#                                 index=False
-
-#                             ).encode("utf-8")
-
-#                             st.download_button(
-
-#                                 label="⬇ Download CSV",
-
-#                                 data=csv,
-
-#                                 file_name="query_result.csv",
-
-#                                 mime="text/csv"
-
-#                             )
-
-#                         else:
-
-#                             st.error(result)
-
-#                         # =============================
-#                         # EXPORT STATUS
-#                         # =============================
-
-#                         st.subheader(
-
-#                             "📁 Export Status"
-
-#                         )
-
-#                         st.success(
-
-#                             response.get(
-
-#                                 "export_path",
-
-#                                 "Export complete."
-
-#                             )
-
-#                         )
-
-#                 except Exception as e:
-
-#                     st.error(
-
-#                         f"Application Error: {e}"
-
-#                     )
 import streamlit as st
 import pandas as pd
 
@@ -895,7 +114,7 @@ question = st.text_input(
 )
 
 # =========================================
-# CLARIFICATION SECTION
+# CLARIFICATION FLOW
 # =========================================
 
 if st.session_state.awaiting_clarification:
@@ -908,21 +127,17 @@ if st.session_state.awaiting_clarification:
 
     clarification_answer = st.text_input(
 
-        "Answer the clarification question",
+        "Your Answer",
 
         key="clarification_input"
 
     )
 
-    # =====================================
-    # SUBMIT CLARIFICATION
-    # =====================================
-
     if st.button(
 
         "Submit Clarification",
 
-        key="clarification_btn"
+        key="clarification_button"
 
     ):
 
@@ -945,7 +160,7 @@ if st.session_state.awaiting_clarification:
                 try:
 
                     # =============================
-                    # STORE USER RESPONSE
+                    # STORE HISTORY
                     # =============================
 
                     st.session_state.conversation_history.append(
@@ -961,7 +176,7 @@ if st.session_state.awaiting_clarification:
                     )
 
                     # =============================
-                    # STRUCTURED QUERY MERGE
+                    # MERGED QUERY
                     # =============================
 
                     merged_query = f"""
@@ -1002,10 +217,30 @@ if st.session_state.awaiting_clarification:
                     )
 
                     # =============================
+                    # IRRELEVANT QUERY
+                    # =============================
+
+                    if not response.get(
+
+                        "is_relevant",
+
+                        True
+
+                    ):
+
+                        st.error(
+
+                            "I'm sorry, I can only help "
+                            "with business analytics "
+                            "and reporting queries."
+
+                        )
+
+                    # =============================
                     # NEEDS MORE CLARIFICATION
                     # =============================
 
-                    if (
+                    elif (
 
                         response.get(
 
@@ -1086,7 +321,7 @@ if st.session_state.awaiting_clarification:
                     )
 
 # =========================================
-# MAIN GENERATE BUTTON
+# MAIN GENERATE FLOW
 # =========================================
 
 if not st.session_state.awaiting_clarification:
@@ -1095,7 +330,7 @@ if not st.session_state.awaiting_clarification:
 
         "Generate Report",
 
-        key="generate_btn"
+        key="generate_button"
 
     ):
 
@@ -1117,9 +352,9 @@ if not st.session_state.awaiting_clarification:
 
                 try:
 
-                    # =================================
+                    # =============================
                     # STORE QUESTION
-                    # =================================
+                    # =============================
 
                     st.session_state.latest_question = (
 
@@ -1127,9 +362,9 @@ if not st.session_state.awaiting_clarification:
 
                     )
 
-                    # =================================
+                    # =============================
                     # RUN GRAPH
-                    # =================================
+                    # =============================
 
                     response = graph.invoke(
 
@@ -1149,9 +384,9 @@ if not st.session_state.awaiting_clarification:
 
                     )
 
-                    # =================================
+                    # =============================
                     # STORE HISTORY
-                    # =================================
+                    # =============================
 
                     st.session_state.conversation_history.append(
 
@@ -1163,9 +398,9 @@ if not st.session_state.awaiting_clarification:
 
                     )
 
-                    # =================================
+                    # =============================
                     # IRRELEVANT QUERY
-                    # =================================
+                    # =============================
 
                     if not response.get(
 
@@ -1183,9 +418,9 @@ if not st.session_state.awaiting_clarification:
 
                         )
 
-                    # =================================
+                    # =============================
                     # NEEDS CLARIFICATION
-                    # =================================
+                    # =============================
 
                     elif (
 
@@ -1247,9 +482,9 @@ if not st.session_state.awaiting_clarification:
 
                         st.rerun()
 
-                    # =================================
+                    # =============================
                     # FINAL QUERY READY
-                    # =================================
+                    # =============================
 
                     else:
 
@@ -1280,24 +515,48 @@ if st.session_state.latest_response:
     )
 
     # =====================================
-    # SHOW CONFIDENCE
+    # CONFIDENCE SCORE
     # =====================================
 
-    # confidence = response.get(
+    confidence = response.get(
 
-    #     "confidence_score",
+        "confidence_score",
 
-    #     0
+        0
 
-    # )
+    )
 
-    # st.metric(
+    st.metric(
 
-    #     "Confidence Score",
+        "Confidence Score",
 
-    #     f"{confidence:.2f}"
+        f"{confidence:.2f}"
 
-    # )
+    )
+
+    # =====================================
+    # FINAL REFINED QUERY
+    # =====================================
+
+    st.subheader(
+
+        "🧠 Final Refined Query"
+
+    )
+
+    st.code(
+
+        response.get(
+
+            "final_refined_query",
+
+            ""
+
+        ),
+
+        language="text"
+
+    )
 
     # =====================================
     # GENERATED SQL
@@ -1428,7 +687,7 @@ if st.session_state.latest_response:
             )
 
         # =================================
-        # DOWNLOAD BUTTON
+        # DOWNLOAD CSV
         # =================================
 
         csv = result.to_csv(

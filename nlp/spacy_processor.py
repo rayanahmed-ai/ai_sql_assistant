@@ -1,54 +1,18 @@
-# import spacy
-# def query_processor(query):
-#     nlp = spacy.load("en_core_web_sm")
-
-#     # query = "Hi my name is Rayan and Give me the sales of Jack's products"
-
-#     doc = nlp(query)
-#     print(doc)
-#     processed_query = " ".join(
-#         [
-#             token.text.lower()
-#             for token in doc
-            
-#         ]
-#     )
-
-#     print(processed_query)
-#     return processed_query
-# import spacy
-
-# # =========================================
-# # LOAD SPACY MODEL ONCE
-# # =========================================
-
-# nlp = spacy.load(
-
-#     "en_core_web_sm"
-
-# )
-# nlp = spacy.blank("en")
+import spacy
 
 # =========================================
-# QUERY PREPROCESSOR
+# LOAD SPACY MODEL
 # =========================================
 
-def query_processor(query):
+# =========================================
+# QUERY PROCESSOR
+# =========================================
 
-    # doc = nlp(query)
+def query_processor(
 
-    # processed_query = " ".join(
+    query
 
-    #     [
+):
 
-    #         token.lemma_.lower()
 
-    #         for token in doc
-
-    #         if not token.is_punct
-    #         and not token.is_space
-
-    #     ]
-
-    # )
     return query.lower()

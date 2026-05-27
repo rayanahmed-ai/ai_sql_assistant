@@ -82,7 +82,7 @@ def retrieve_context(query):
 
         query,
 
-        k=2
+        k=5
 
     )
 
